@@ -1,0 +1,15 @@
+#Configuração do menu shop
+Menu:
+  Nome: '&bMenu Nome Legal'
+Itens:
+#Você pode criar quantos itens quiser, basta seguir o exemplo abaixo:
+  Pao:
+    ID: 282;0
+    Nome: '&ePao legal'
+    Lore:
+      - '&3Pao do nagato'
+      - '&eCusto: 100 mobcoins'
+    Valor: 100
+    Comandos:
+      - give %player% bread 64
+      - katon no jutsu command

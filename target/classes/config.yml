@@ -1,0 +1,55 @@
+###############################################################
+#                         pMobCoins v3.0                      #
+#                         Autor: Paraibano                    #
+#              Achou algum bug/erro? me chame no discord      #
+#                   Discord: Marcos Paraibano#0001            #
+#                               ☺                             #
+#                                                             #
+#                                                             #
+###############################################################
+
+SQL:
+  #Se NAO tem alguma database mysql coloque false, caso tenha coloca true
+  Enable: false
+  Host: 'host'
+  Port: 3306
+  User: 'user'
+  Password: '*******'
+  Database: 'database'
+
+Mensagens:
+#Utilizada quando o jogador digitar /mobcoins.
+  MobCoinsMessage: '&aVocê tem &e%mobcoins% &aMobCoins.'
+#Utilizada quando o jogador matar um dos mobs que esta na lista acima.  
+  MobDeathBoolean: true
+  MobDeathMessage: '&aVocê matou um &7%mob% &ae recebeu sua recompensa'
+#Utilizada quando o player adquirir um produto
+  SucessMessage: '&aVocê adquiriu o produto &7%produto% &aPor &7%valor%' 
+#Utilizada quando o player nao conseguir adquirir um produto  
+  FailedMessage: '&cVocê não tem mobcoins suficientes'
+#Utilizada quando o jogador estiver offline ou nao existir  
+  InvalidPlayer: '&cJogador nao encontrado'
+#Utilizada quando o admin seta/adiciona/remove mobcoins do jogador  
+  MobCoinsGive: '&6O Jogador %player% ficou com %mobcoins%' 
+#Utilizada quando o jogador nao tiver mobcoins suficientes  
+  NoMobCoins: '&cjogador nao tem mobcoins suficientes'
+  
+NPC:
+#Limite de até 16 caracteres!!!
+#Se tiver mais de 16 caracteres, o plugin pode apresentar erros!!!
+  Nome: '&b&lMobCoinsShop' 
+  Skin: 'Paraibano'
+ 
+Top:  
+#Variáveis:
+#%player% = jogador
+#%rank% = colocação no top
+#%quantidade% = quantia
+  Format: '&7%rank%° &e%player% -> &6%coins%'
+  Title: '&e&lMobCoins TOP'
+#Delay ao atualizar (minutos)
+  Delay: 5
+      
+Mobs:
+  - 'CREEPER;1'
+  - 'SHEEP;1'

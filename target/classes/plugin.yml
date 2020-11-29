@@ -1,0 +1,7 @@
+name: pMobCoins
+version: 2.0
+main: me.mobcoins.MobCoins
+author: Marcos Paraibano
+website: https://github.com/MarcosParaibano
+description: Plugin de moedas ao matar mobs
+softdepend: [ Citizens, MVdWPlaceholderAPI, PlaceholderAPI ]
