@@ -1,91 +1,71 @@
 package me.mobcoins.database;
 
-import static me.mobcoins.MobCoins.getInstance;
+import java.sql.*;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
+import lombok.Builder;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 
 @Getter
 public class DatabaseConnector {
 
-	public static Connection con = null;
-	public static boolean enable = getInstance().getConfigurationLoader().enable;
+	private final Credentials credentials;
 
-	public DatabaseConnector(){
-		openConnection();
+	private Connection connection;
+	private boolean active;
+
+	public DatabaseConnector(Credentials credentials) {
+		this.credentials = credentials;
 	}
 
-	public void openConnection() {
-		if (enable) {
-			String host = getInstance().getConfigurationLoader().host;
-			int port = Integer.parseInt(getInstance().getConfigurationLoader().port);
-			String user = getInstance().getConfigurationLoader().user;
-			String database = getInstance().getConfigurationLoader().database;
-			String password = getInstance().getConfigurationLoader().password;
+	public void connect() {
+		try {
 
-			String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
-			try {
-				if (con != null)
-					return;
-				con = DriverManager.getConnection(url, user, password);
-				createTable("mobcoins", "uuid TEXT, coins TEXT");
-				Bukkit.getConsoleSender().sendMessage("§aConexao com MySQL aberta com sucesso!");
-			} catch (SQLException e) {
-				Bukkit.getConsoleSender().sendMessage("§cConexao com MySQL nao foi possivel, desabilitando plugin");
-				getInstance().getPluginLoader().disablePlugin(getInstance());
-			}
+			String driver = "com.mysql.jdbc.Driver";
+			Class.forName(driver);
 
-		} else {
-			try {
-				File file = new File(getInstance().getDataFolder(), "storage.db");
-				if (con != null)
-					return;
-				Class.forName("org.sqlite.JDBC");
-				String url = "jdbc:sqlite:" + file;
-				con = DriverManager.getConnection(url);
-				createTable("mobcoins", "uuid TEXT, coins TEXT");
-				Bukkit.getConsoleSender().sendMessage("§aConexao com SQLite foi aberta com sucesso!");
-			} catch (SQLException e) {
-				Bukkit.getConsoleSender().sendMessage("§cConexao com SQLite nao foi possivel, desabilitando plugin");
-				getInstance().getPluginLoader().disablePlugin(getInstance());
-			} catch (ClassNotFoundException e) {		
-			}
-		}
-	}
+			String url = "jdbc:mysql://<ip>:<port>/<database>";
 
-	public void closeConnection() {
-		if (con != null) {
-			try {
-				con.close();
-			} catch (SQLException e) {
-				System.out.println("§cErro ao fechar conexão");
-			}
+			this.connection = DriverManager.getConnection(
+					url.replaceAll("<ip>", credentials.ip)
+							.replaceAll("<port>", String.valueOf(credentials.port))
+							.replaceAll("<database>", credentials.database),
+					credentials.user, credentials.password);
+
+			DatabaseMetaData metaData = connection.getMetaData();
+			System.out.println("Conectado à database " + metaData.getDatabaseProductName());
+			System.out.println("Driver: " + metaData.getDriverName());
+
+			this.active = true;
+
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 
 	public Connection getConnection() {
-		if (con != null) {
-			return con;
-		}
-		return null;
+		if (connection == null || !active) this.connect();
+
+		return connection;
 	}
 
-	public void createTable(String tableName, String columns) {
-		PreparedStatement st = null;
-		try {
-			st = con.prepareStatement("CREATE TABLE IF NOT EXISTS `" + tableName + "` (" + columns + ")");
-			st.executeUpdate();
-			st.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Erro ao criar a tabela " + tableName);
+	public void disconnect() {
+		if (connection != null && active) {
+			try {
+				connection.close();
+				active = false;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
+	@Builder
+	public static class Credentials {
+		private final String ip;
+		private final int port;
+		private final String user;
+		private final String password;
+		private final String database;
+	}
 }

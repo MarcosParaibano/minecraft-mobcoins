@@ -26,11 +26,10 @@ public class ConfigurationLoader {
     public final String npcSkin;
 
     //SQL
-    public final boolean enable;
-    public final String host;
-    public final String port;
-    public final String user;
-    public final String password;
-    public final String database;
+    public final String sqlHost;
+    public final int sqlPort;
+    public final String sqlUser;
+    public final String sqlPassword;
+    public final String sqlDatabase;
 
 }

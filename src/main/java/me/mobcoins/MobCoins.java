@@ -45,8 +45,14 @@ public class MobCoins extends JavaPlugin{
 	}
 
 	private void initialize(){
-		userManager = new UserManager();
-		databaseConnector = new DatabaseConnector();
+		userManager = new UserManager(databaseConnector);
+		databaseConnector = new DatabaseConnector(DatabaseConnector.Credentials.builder()
+				.ip(configurationLoader.sqlHost)
+				.port(configurationLoader.sqlPort)
+				.database(configurationLoader.sqlDatabase)
+				.password(configurationLoader.sqlPassword)
+				.user(configurationLoader.sqlUser)
+				.build());
 		mobsLoader = new MobsLoader();
 		menuFile = new MenuFile();
 		itensLoader = new ItensLoader();
@@ -58,17 +64,17 @@ public class MobCoins extends JavaPlugin{
 		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)new PlaceholderAPI().register();
 		if(Bukkit.getPluginManager().getPlugin("MVdWPlaceholderAPI") != null)MVdWPlaceholderAPI.run();
 		if(Bukkit.getPluginManager().getPlugin("Citizens") == null)
-			System.out.println("§cPlugin Citizens Não encontrado!!!");
+			System.out.println("ï¿½cPlugin Citizens Nï¿½o encontrado!!!");
 		for(Player p : Bukkit.getOnlinePlayers())
 			getUserManager().loadUser(p.getUniqueId());
 	}
 
 	public void onDisable() {
 		for(Player p : Bukkit.getOnlinePlayers()){
-			User user = getUserManager().getUser(p.getUniqueId());
+			User user = getUserManager().getUserByUUID(p.getUniqueId());
 			getUserManager().saveUser(user);
 		}
-		getDatabaseConnector().closeConnection();
+		getDatabaseConnector().disconnect();
 	}
 
 	private void loadCommands(){
@@ -108,22 +114,21 @@ public class MobCoins extends JavaPlugin{
 				.sucessMessage(getString("Mensagens.SucessMessage"))
                 .npcName(getString("NPC.Nome"))
                 .npcSkin(getString("NPC.Skin"))
-				.enable(Boolean.getBoolean(getString("SQL.Enable")))
-				.host(getString("SQL.Host"))
-				.port(getString("SQL.Port"))
-				.user(getString("SQL.User"))
-				.password(getString("SQL.Password"))
-				.database(getString("SQL.Database"))
+				.sqlHost(getString("SQL.Host"))
+				.sqlPort(getConfig().getInt(""))
+				.sqlUser(getString("SQL.User"))
+				.sqlPassword(getString("SQL.Password"))
+				.sqlDatabase(getString("SQL.Database"))
 				.build();
 	}
 
 	private String getString(String path){
-		return getConfig().getString(path).replaceAll("&", "§");
+		return getConfig().getString(path).replaceAll("&", "ï¿½");
 	}
 
 	private void topScheduler(){
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getTopManager().updateTop(),
-				0L, 20 * 60 * Integer.parseInt(getConfigurationLoader().delay));
+				0L, 20L * 60 * Integer.parseInt(getConfigurationLoader().delay));
 	}
 
 	public static MobCoins getInstance() {
